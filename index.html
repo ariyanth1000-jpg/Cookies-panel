@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>কুকিজ প্যানেল</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+min-height:100vh;padding:14px;display:flex;justify-content:center;align-items:flex-start;
+background:radial-gradient(circle at 20% 0%,#12204a 0%,#070a13 55%,#05070f 100%);
+color:#eef3ff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+-webkit-font-smoothing:antialiased
+}
+.card{
+width:100%;max-width:520px;padding:16px;border-radius:20px;
+background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.03));
+border:1px solid rgba(255,255,255,.14);
+box-shadow:0 12px 40px rgba(37,99,235,.28),inset 0 1px 0 rgba(255,255,255,.08);
+backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)
+}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{
+width:38px;height:38px;flex:none;border-radius:12px;display:grid;place-items:center;
+background:linear-gradient(135deg,#4f8cff,#2563eb);font-size:18px;
+box-shadow:0 6px 18px rgba(37,99,235,.55)
+}
+.title{font-size:17px;font-weight:800;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub{font-size:11px;color:#9fb0d6;margin-top:2px}
+.badge{
+flex:none;border:1px solid rgba(255,255,255,.16);border-radius:30px;
+padding:6px 11px;font-size:10px;font-weight:700;color:#cfe0ff;
+background:rgba(255,255,255,.05);white-space:nowrap
+}
+.panel{padding:13px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.12);border-radius:16px}
+
+/* ====== ফিক্সড সাইজ ডিসপ্লে ====== */
+.display{
+width:100%;
+height:130px;                 /* ✅ ফিক্সড উচ্চতা — কনটেন্টে বদলাবে না */
+padding:0 16px;              /* ভেতরের প্যাডিং */
+margin-bottom:12px;
+border-radius:14px;
+border:1px solid rgba(255,255,255,.1);
+background:linear-gradient(180deg,#0a1020,#070c18);
+display:flex;justify-content:center;align-items:center;
+text-align:center;
+
+/* ✅ ফিক্সড বক্সের ভেতরে ওভারফ্লো কাটা */
+overflow:hidden;
+
+font-size:30px;              /* ✅ বড় ফন্ট */
+font-weight:800;letter-spacing:.8px;line-height:1.15;
+overflow-wrap:anywhere;word-break:break-all;
+transition:color .2s ease;
+}
+.display.loading{color:#8ea2c9;font-size:16px;font-weight:600;letter-spacing:.3px;word-break:normal}
+.display .inner{
+width:100%;
+display:block;
+white-space:nowrap;          /* এক লাইনে রাখা */
+overflow:hidden;
+text-overflow:clip;          /* ✅ যেটুকু ফিট হয় ততটুকুই */
+text-align:center;
+}
+.timer{color:#22c55e;font-size:30px;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.copyBtn{
+width:100%;padding:15px;border:0;border-radius:14px;position:relative;overflow:hidden;
+background:linear-gradient(135deg,#4f8cff,#2563eb);
+color:#fff;font-size:14px;font-weight:800;letter-spacing:.4px;cursor:pointer;
+transition:transform .12s ease,opacity .2s ease,box-shadow .2s ease;
+box-shadow:0 8px 22px rgba(37,99,235,.45)
+}
+.copyBtn:active:not(:disabled){transform:scale(.98)}
+.copyBtn:disabled{opacity:.55;cursor:not-allowed;box-shadow:none}
+.copyBtn .spinner{
+display:none;width:16px;height:16px;margin-right:8px;vertical-align:-3px;
+border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;
+animation:spin .7s linear infinite
+}
+.copyBtn.loading .spinner{display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ====== স্টোরি সেকশন ====== */
+.storyWrap{margin-top:14px;padding:13px;border-radius:16px;
+background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.1)}
+.storyHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.storyTitle{font-size:12px;font-weight:800;color:#cfe0ff;letter-spacing:.5px;text-transform:uppercase}
+.clearBtn{
+border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);
+color:#9fb0d6;font-size:10px;font-weight:700;padding:5px 9px;border-radius:20px;
+cursor:pointer;transition:.2s
+}
+.clearBtn:hover{color:#fff;background:rgba(255,255,255,.12)}
+.storyList{display:flex;flex-direction:column;gap:8px}
+.storyItem{
+display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;
+background:linear-gradient(135deg,rgba(79,140,255,.12),rgba(37,99,235,.06));
+border:1px solid rgba(79,140,255,.22);
+animation:fadeIn .35s ease both
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.storyDot{
+width:22px;height:22px;flex:none;border-radius:50%;display:grid;place-items:center;
+font-size:10px;font-weight:900;color:#bfd4ff;
+background:rgba(79,140,255,.2);border:1px solid rgba(79,140,255,.4)
+}
+.storyNum{flex:1;font-size:14px;font-weight:700;letter-spacing:.4px;overflow-wrap:anywhere}
+.storyTime{font-size:10px;color:#7d8db3;white-space:nowrap}
+.storyEmpty{
+text-align:center;font-size:12px;color:#6b7a9c;padding:14px 6px;
+border:1px dashed rgba(255,255,255,.1);border-radius:12px
+}
+.toast{
+position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-8px);
+background:#111827;border:1px solid rgba(255,255,255,.12);
+padding:10px 16px;border-radius:12px;font-size:13px;font-weight:600;
+opacity:0;transition:.25s;pointer-events:none;z-index:99;
+box-shadow:0 10px 30px rgba(0,0,0,.5)
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<div class="card">
+  <div class="top">
+    <div class="brand">
+      <div class="logo">🍪</div>
+      <div>
+        <div class="title">কুকিজ প্যানেল</div>
+        <div class="sub">Created By Tamim</div>
+      </div>
+    </div>
+    <div class="badge">🇧🇩 META AI</div>
+  </div>
+
+  <div class="panel">
+    <!-- ✅ ফিক্সড সাইজ ডিসপ্লে -->
+    <div class="display loading" id="display"><span class="inner" id="displayInner">লোড হচ্ছে...</span></div>
+    <button class="copyBtn" id="copyBtn">
+      <span class="spinner"></span><span id="btnText">COPY &amp; DELETE (0)</span>
+    </button>
+  </div>
+
+  <!-- ====== স্টোরি সেকশন ====== -->
+  <div class="storyWrap">
+    <div class="storyHead">
+      <div class="storyTitle">📜 Story (সর্বশেষ ৩টি)</div>
+      <button class="clearBtn" id="clearStory">Clear</button>
+    </div>
+    <div class="storyList" id="storyList"></div>
+  </div>
+</div>
+
+<script>
+/* ================= কনফিগ ================= */
+const URL="https://script.google.com/macros/s/AKfycbxs5UnBzGbXDsbX_I027WP7RVdGrKBuKZpYGGPEee3l6lkr670YDne_A-cwdznjFeWMhg/exec";
+const SERVICE="rangeid03";      // C কলাম
+const COOLDOWN_MS=5000;         // ৫ সেকেন্ড
+const MAX_STORY=3;              // সর্বোচ্চ ৩টি স্টোরি
+
+/* ================= কী ================= */
+const NUMBER_KEY="kukiz_pending_number";
+const LOCK_KEY="kukiz_next_allowed";
+const STORY_KEY="kukiz_story";
+
+/* ================= DOM ================= */
+const display=document.getElementById("display");
+const displayInner=document.getElementById("displayInner");
+const copyBtn=document.getElementById("copyBtn");
+const btnText=document.getElementById("btnText");
+const toast=document.getElementById("toast");
+const storyList=document.getElementById("storyList");
+const clearStoryBtn=document.getElementById("clearStory");
+
+/* ================= স্টেট ================= */
+let currentNumber=localStorage.getItem(NUMBER_KEY)||"";
+let nextAllowed=Number(localStorage.getItem(LOCK_KEY)||0);
+let busy=false;
+let timer=null;
+let toastTimer=null;
+let totalCount=0;
+
+/* ================= হেল্পার ================= */
+function notify(msg){
+  toast.textContent=msg;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>toast.classList.remove("show"),1700);
+}
+
+/* ✅ ডিসপ্লেতে ভ্যালু দেখানো — সবসময় inner span-এ রাখা */
+function setDisplay(text,isLoading=false){
+  display.classList.toggle("loading",isLoading);
+  displayInner.textContent=text;
+  // বড় ভ্যালু হলে শুরু থেকে দেখাবে (শেষ কাটা যাবে)
+  displayInner.style.direction="ltr";
+  displayInner.style.textAlign=isLoading?"center":"left";
+  displayInner.scrollLeft=0;
+}
+
+function setBtnLabel(text){
+  btnText.textContent=text;
+}
+
+function setBusy(v){
+  busy=v;
+  copyBtn.disabled=v||Date.now()<nextAllowed||!currentNumber;
+  copyBtn.classList.toggle("loading",v&&currentNumber!=="");
+}
+
+/* ================= স্টোরি ================= */
+function getStory(){
+  try{return JSON.parse(localStorage.getItem(STORY_KEY))||[]}
+  catch{return[]}
+}
+function saveStory(arr){
+  localStorage.setItem(STORY_KEY,JSON.stringify(arr.slice(0,MAX_STORY)));
+}
+function timeAgo(ts){
+  const s=Math.floor((Date.now()-ts)/1000);
+  if(s<60)return "just now";
+  if(s<3600)return Math.floor(s/60)+"m ago";
+  if(s<86400)return Math.floor(s/3600)+"h ago";
+  return Math.floor(s/86400)+"d ago";
+}
+function renderStory(){
+  const items=getStory();
+  if(!items.length){
+    storyList.innerHTML='<div class="storyEmpty">এখনো কোনো নাম্বার কপি করা হয়নি</div>';
+    return;
+  }
+  storyList.innerHTML=items.map((it,i)=>`
+    <div class="storyItem">
+      <div class="storyDot">${i+1}</div>
+      <div class="storyNum">${it.num}</div>
+      <div class="storyTime">${timeAgo(it.ts)}</div>
+    </div>
+  `).join("");
+}
+function pushStory(num){
+  const arr=getStory();
+  arr.unshift({num,ts:Date.now()});
+  saveStory(arr);
+  renderStory();
+}
+clearStoryBtn.addEventListener("click",()=>{
+  localStorage.removeItem(STORY_KEY);
+  renderStory();
+  notify("Story cleared");
+});
+
+/* ================= API ================= */
+async function loadTotal(){
+  try{
+    const r=await fetch(URL+"?action=total&service="+encodeURIComponent(SERVICE),{cache:"no-store"});
+    const d=await r.json();
+    totalCount=d.total??0;
+    if(!(Date.now()<nextAllowed)&&!busy)setBtnLabel(`COPY & DELETE (${totalCount})`);
+  }catch{
+    if(!(Date.now()<nextAllowed)&&!busy)setBtnLabel("COPY & DELETE (--)");
+  }
+}
+
+async function loadNumber(){
+  if(busy||currentNumber||Date.now()<nextAllowed)return;
+  setBusy(true);
+  setDisplay("লোড হচ্ছে...",true);
+
+  try{
+    const r=await fetch(URL+"?action=get&service="+encodeURIComponent(SERVICE)+"&need=1",{cache:"no-store"});
+    const d=await r.json();
+    const numbers=d.numbers||[];
+    if(!numbers.length){
+      setDisplay("No Number Available",true);
+      setBtnLabel("COPY & DELETE (0)");
+      return;
+    }
+    currentNumber=String(numbers[0]);
+    localStorage.setItem(NUMBER_KEY,currentNumber);
+    setDisplay(currentNumber,false);
+  }catch{
+    setDisplay("Connection Error",true);
+  }finally{
+    setBusy(false);
+  }
+}
+
+/* ================= টাইমার ================= */
+function startTimer(){
+  clearInterval(timer);
+  const tick=()=>{
+    const left=Math.max(0,Math.ceil((nextAllowed-Date.now())/1000));
+    if(left>0){
+      display.classList.remove("loading");
+      displayInner.innerHTML=`<span class="timer">00:${String(left).padStart(2,"0")}</span>`;
+      displayInner.style.textAlign="center";
+      copyBtn.disabled=true;
+      setBtnLabel(`PLEASE WAIT (${left})`);
+    }else{
+      clearInterval(timer);
+      localStorage.removeItem(LOCK_KEY);
+      loadTotal();
+      if(!currentNumber)loadNumber();
+    }
+  };
+  tick();
+  timer=setInterval(tick,250);
+}
+
+/* ================= ক্লিক হ্যান্ডলার ================= */
+copyBtn.addEventListener("click",async()=>{
+  if(busy)return;
+  if(Date.now()<nextAllowed){notify("Please wait 5 seconds");return;}
+  if(!currentNumber){loadNumber();return;}
+
+  setBusy(true);
+
+  try{
+    // ✅ ফুল ভ্যালু কপি (শুধু দেখানো অংশ নয়)
+    await navigator.clipboard.writeText(currentNumber);
+
+    // স্টোরিতে যোগ
+    pushStory(currentNumber);
+
+    // ডিলিট
+    currentNumber="";
+    localStorage.removeItem(NUMBER_KEY);
+    setDisplay("",false);
+    notify("Copied & Deleted");
+
+    // ৫ সেকেন্ড লক
+    nextAllowed=Date.now()+COOLDOWN_MS;
+    localStorage.setItem(LOCK_KEY,String(nextAllowed));
+    startTimer();
+    loadTotal();
+  }catch{
+    notify("Copy Failed - Number Kept");
+    setDisplay(currentNumber,false);
+  }finally{
+    setBusy(false);
+  }
+});
+
+/* ================= ইনিশিয়াল ================= */
+renderStory();
+
+if(currentNumber){
+  setDisplay(currentNumber,false);
+  setBusy(false);
+}else if(Date.now()<nextAllowed){
+  startTimer();
+}else{
+  loadNumber();
+}
+
+loadTotal();
+if(Date.now()<nextAllowed)startTimer();
+</script>
+</body>
+</html>
